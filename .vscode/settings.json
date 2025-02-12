@@ -1,0 +1,17 @@
+{
+    "ros.distro": "humble",
+    "python.autoComplete.extraPaths": [
+        "/home/tht/turtlebot3_ws/install/turtlebot3_teleop/lib/python3.10/site-packages",
+        "/home/tht/turtlebot3_ws/install/turtlebot3_example/lib/python3.10/site-packages",
+        "/home/tht/turtlebot3_ws/install/turtlebot3_msgs/local/lib/python3.10/dist-packages",
+        "/opt/ros/humble/lib/python3.10/site-packages",
+        "/opt/ros/humble/local/lib/python3.10/dist-packages"
+    ],
+    "python.analysis.extraPaths": [
+        "/home/tht/turtlebot3_ws/install/turtlebot3_teleop/lib/python3.10/site-packages",
+        "/home/tht/turtlebot3_ws/install/turtlebot3_example/lib/python3.10/site-packages",
+        "/home/tht/turtlebot3_ws/install/turtlebot3_msgs/local/lib/python3.10/dist-packages",
+        "/opt/ros/humble/lib/python3.10/site-packages",
+        "/opt/ros/humble/local/lib/python3.10/dist-packages"
+    ]
+}
