@@ -58,6 +58,10 @@ def generate_launch_description():
     hokuyo_launch_file = LaunchConfiguration(
         'hokuyo_launch_file',
         default=os.path.join(get_package_share_directory('urg_node2'), 'launch', 'urg_node2.launch.py'))
+    
+    t265_launch_file = LaunchConfiguration(
+        't265_launch_file',
+        default=os.path.join(get_package_share_directory('realsense2_camera'), 'launch', 'rs_launch.py'))
 
     use_sim_time = LaunchConfiguration('use_sim_time', default='false')
 
