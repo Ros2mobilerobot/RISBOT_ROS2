@@ -21,6 +21,13 @@ install(
   DESTINATION share/${PROJECT_NAME}
 )
 
+install(
+  PROGRAMS
+    scripts/dynamic_tf_broadcaster.py
+  DESTINATION lib/${PROJECT_NAME}
+)
+
+
 ################################################################################
 # Macro for ament package
 ################################################################################

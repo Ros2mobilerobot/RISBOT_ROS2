@@ -34,7 +34,7 @@ def generate_launch_description():
     # LDS_MODEL = os.environ['LDS_MODEL']
     # LDS_LAUNCH_FILE = '/hlds_laser.launch.py'
 
-    usb_port = LaunchConfiguration('usb_port', default='/dev/ttyUSB0')
+    # usb_port = LaunchConfiguration('usb_port', default='/dev/ttyUSB0')
 
     tb3_param_dir = LaunchConfiguration(
         'tb3_param_dir',
@@ -60,11 +60,35 @@ def generate_launch_description():
         'hokuyo_launch_file',
         default=os.path.join(get_package_share_directory('urg_node2'), 'launch', 'urg_node2.launch.py'))
     
-    t265_launch_file = LaunchConfiguration(
-        't265_launch_file',
-        default=os.path.join(get_package_share_directory('realsense2_camera'), 'launch', 'rs_launch.py'))
+    t265_launch = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource([
+            os.path.join(get_package_share_directory('realsense2_camera'), 'launch', 'rs_launch.py')
+        ]),
+        launch_arguments={'enable_pose_jumping': 'false'}.items(),
+    )
+
 
     use_sim_time = LaunchConfiguration('use_sim_time', default='false')
+
+    # Transform giữa T265 và robot
+    t265_tf = Node(
+        package="tf2_ros",
+        executable="static_transform_publisher",
+        arguments=["0.45", "0", "0.9", "0", "0", "0", "camera_pose_frame", "camera_link"]
+    )
+
+    t265_2_tf = Node(
+        package="tf2_ros",
+        executable="static_transform_publisher",
+        arguments=["-0.45", "0", "0.9", "0", "0", "0", "camera_link", "base_footprint"]
+    )
+
+    scan_tf = Node(
+        package="tf2_ros",
+        executable="static_transform_publisher",
+        arguments=["0", "0", "0", "0", "0", "0", "camera_pose_frame", "laser_scan"]
+    )
+
 
     return LaunchDescription([
         DeclareLaunchArgument(
@@ -72,10 +96,10 @@ def generate_launch_description():
             default_value=use_sim_time,
             description='Use simulation (Gazebo) clock if true'),
 
-        DeclareLaunchArgument(
-            'usb_port',
-            default_value=usb_port,
-            description='Connected USB port with Arduino'),
+        # DeclareLaunchArgument(
+        #     'usb_port',
+        #     default_value=usb_port,
+        #     description='Connected USB port with Arduino'),
 
         DeclareLaunchArgument(
             'tb3_param_dir',
@@ -97,14 +121,17 @@ def generate_launch_description():
             PythonLaunchDescriptionSource([hokuyo_launch_file]),
         ),
 
-        IncludeLaunchDescription(
-            PythonLaunchDescriptionSource([t265_launch_file]),
-        ),
+        t265_launch,
 
+
+        t265_tf,
+        t265_2_tf,
+        scan_tf,
+        
         Node(
             package='turtlebot3_node',
             executable='turtlebot3_ros',
             parameters=[tb3_param_dir],
-            arguments=['-i', usb_port],
+            # arguments=['-i', usb_port],
             output='screen'),
     ])

@@ -14,7 +14,12 @@
   <author email="thlim@robotis.com">Darby Lim</author>
   <author email="pyo@robotis.com">Pyo</author>
   <buildtool_depend>ament_cmake</buildtool_depend>
+
   <exec_depend>cartographer_ros</exec_depend>
+  <exec_depend>rclpy</exec_depend>
+  <exec_depend>tf2_ros</exec_depend>
+  <exec_depend>geometry_msgs</exec_depend>
+
   <export>
     <build_type>ament_cmake</build_type>
   </export>

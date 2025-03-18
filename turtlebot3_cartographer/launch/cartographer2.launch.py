@@ -15,22 +15,26 @@
 # Author: Darby Lim
 
 import os
+
 from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription
 from launch.actions import DeclareLaunchArgument
-from launch_ros.actions import Node
-from launch.substitutions import LaunchConfiguration
 from launch.actions import IncludeLaunchDescription
+from launch.conditions import IfCondition
 from launch.launch_description_sources import PythonLaunchDescriptionSource
+from launch.substitutions import LaunchConfiguration
 from launch.substitutions import ThisLaunchFileDir
+from launch_ros.actions import Node
+
 
 def generate_launch_description():
     use_sim_time = LaunchConfiguration('use_sim_time', default='false')
+    use_rviz = LaunchConfiguration('use_rviz', default='true')
     turtlebot3_cartographer_prefix = get_package_share_directory('turtlebot3_cartographer')
     cartographer_config_dir = LaunchConfiguration('cartographer_config_dir', default=os.path.join(
                                                   turtlebot3_cartographer_prefix, 'config'))
     configuration_basename = LaunchConfiguration('configuration_basename',
-                                                 default='turtlebot3_t265.lua')
+                                                 default='turtlebot3_lds_2d.lua')
 
     resolution = LaunchConfiguration('resolution', default='0.05')
     publish_period_sec = LaunchConfiguration('publish_period_sec', default='1.0')
@@ -52,16 +56,6 @@ def generate_launch_description():
             default_value='false',
             description='Use simulation (Gazebo) clock if true'),
 
-                # 동적 변환: map -> odom
-        # Node(
-        #     package='turtlebot3_cartographer',
-        #     executable='dynamic_tf_broadcaster.py',
-        #     output='screen',
-        #     name='dynamic_tf_broadcaster',
-        #     parameters=[],
-        #     prefix='python3'
-        # ),
-
         Node(
             package='cartographer_ros',
             executable='cartographer_node',
@@ -69,12 +63,7 @@ def generate_launch_description():
             output='screen',
             parameters=[{'use_sim_time': use_sim_time}],
             arguments=['-configuration_directory', cartographer_config_dir,
-                       '-configuration_basename', configuration_basename],
-            remappings=[
-                ('/imu', '/camera/imu'),
-                ('/odom', '/camera/pose/sample')
-            ]
-        ),
+                       '-configuration_basename', configuration_basename]),
 
         DeclareLaunchArgument(
             'resolution',
@@ -98,5 +87,6 @@ def generate_launch_description():
             name='rviz2',
             arguments=['-d', rviz_config_dir],
             parameters=[{'use_sim_time': use_sim_time}],
+            condition=IfCondition(use_rviz),
             output='screen'),
     ])
