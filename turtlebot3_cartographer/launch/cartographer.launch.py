@@ -1,19 +1,3 @@
-# Copyright 2019 Open Source Robotics Foundation, Inc.
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-#
-# Author: Darby Lim
-
 import os
 from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription
@@ -52,15 +36,13 @@ def generate_launch_description():
             default_value='false',
             description='Use simulation (Gazebo) clock if true'),
 
-                # 동적 변환: map -> odom
-        # Node(
-        #     package='turtlebot3_cartographer',
-        #     executable='dynamic_tf_broadcaster.py',
-        #     output='screen',
-        #     name='dynamic_tf_broadcaster',
-        #     parameters=[],
-        #     prefix='python3'
-        # ),
+        Node(
+            package='tf2_ros',
+            executable='static_transform_publisher',
+            name='static_tf_pub_odom_to_base_footprint',
+            output='screen',
+            arguments=['0.0', '0.0', '0.0', '0.0', '0.0', '0.0', 'odom', 'base_footprint']
+        ),
 
         Node(
             package='cartographer_ros',
@@ -71,8 +53,8 @@ def generate_launch_description():
             arguments=['-configuration_directory', cartographer_config_dir,
                        '-configuration_basename', configuration_basename],
             remappings=[
-                ('/imu', '/camera/imu'),
-                ('/odom', '/camera/pose/sample')
+                ('imu', '/camera/imu'),
+                ('odom', '/camera/pose/sample')
             ]
         ),
 

@@ -1,20 +1,4 @@
 #!/usr/bin/env python3
-#
-# Copyright 2019 ROBOTIS CO., LTD.
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-#
-# Authors: Darby Lim
 
 import os
 import launch_ros.actions
@@ -30,32 +14,13 @@ from launch_ros.actions import Node
 
 
 def generate_launch_description():
-    TURTLEBOT3_MODEL = os.environ['TURTLEBOT3_MODEL']
-    # LDS_MODEL = os.environ['LDS_MODEL']
-    # LDS_LAUNCH_FILE = '/hlds_laser.launch.py'
-
-    # usb_port = LaunchConfiguration('usb_port', default='/dev/ttyUSB0')
-
     tb3_param_dir = LaunchConfiguration(
         'tb3_param_dir',
         default=os.path.join(
             get_package_share_directory('turtlebot3_bringup'),
             'param',
-            TURTLEBOT3_MODEL + '.yaml'))
+            'waffle.yaml'))
 
-    # if LDS_MODEL == 'LDS-01':
-    #     lidar_pkg_dir = LaunchConfiguration(
-    #         'lidar_pkg_dir',
-    #         default=os.path.join(get_package_share_directory('hls_lfcd_lds_driver'), 'launch'))
-    # elif LDS_MODEL == 'LDS-02':
-    #     lidar_pkg_dir = LaunchConfiguration(
-    #         'lidar_pkg_dir',
-    #         default=os.path.join(get_package_share_directory('ld08_driver'), 'launch'))
-    #     LDS_LAUNCH_FILE = '/ld08.launch.py'
-    # else:
-    #     lidar_pkg_dir = LaunchConfiguration(
-    #         'lidar_pkg_dir',
-    #         default=os.path.join(get_package_share_directory('hls_lfcd_lds_driver'), 'launch'))
     hokuyo_launch_file = LaunchConfiguration(
         'hokuyo_launch_file',
         default=os.path.join(get_package_share_directory('urg_node2'), 'launch', 'urg_node2.launch.py'))
@@ -74,19 +39,7 @@ def generate_launch_description():
     t265_tf = Node(
         package="tf2_ros",
         executable="static_transform_publisher",
-        arguments=["0.45", "0", "0.9", "0", "0", "0", "camera_pose_frame", "camera_link"]
-    )
-
-    t265_2_tf = Node(
-        package="tf2_ros",
-        executable="static_transform_publisher",
-        arguments=["-0.45", "0", "0.9", "0", "0", "0", "camera_link", "base_footprint"]
-    )
-
-    scan_tf = Node(
-        package="tf2_ros",
-        executable="static_transform_publisher",
-        arguments=["0", "0", "0", "0", "0", "0", "camera_pose_frame", "laser_scan"]
+        arguments=["0.45", "0", "0.9", "0", "0", "0", "base_footprint", "odom_frame"]
     )
 
 
@@ -95,11 +48,6 @@ def generate_launch_description():
             'use_sim_time',
             default_value=use_sim_time,
             description='Use simulation (Gazebo) clock if true'),
-
-        # DeclareLaunchArgument(
-        #     'usb_port',
-        #     default_value=usb_port,
-        #     description='Connected USB port with Arduino'),
 
         DeclareLaunchArgument(
             'tb3_param_dir',
@@ -112,11 +60,6 @@ def generate_launch_description():
             launch_arguments={'use_sim_time': use_sim_time}.items(),
         ),
 
-        # IncludeLaunchDescription(
-        #     PythonLaunchDescriptionSource([lidar_pkg_dir, LDS_LAUNCH_FILE]),
-        #     launch_arguments={'port': '/dev/ttyUSB0', 'frame_id': 'base_scan'}.items(),
-        # ),
-
         IncludeLaunchDescription(
             PythonLaunchDescriptionSource([hokuyo_launch_file]),
         ),
@@ -125,13 +68,10 @@ def generate_launch_description():
 
 
         t265_tf,
-        t265_2_tf,
-        scan_tf,
-        
+
         Node(
             package='turtlebot3_node',
             executable='turtlebot3_ros',
             parameters=[tb3_param_dir],
-            # arguments=['-i', usb_port],
             output='screen'),
     ])

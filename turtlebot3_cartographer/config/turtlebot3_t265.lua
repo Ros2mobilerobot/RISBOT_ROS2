@@ -1,19 +1,3 @@
--- Copyright 2016 The Cartographer Authors
---
--- Licensed under the Apache License, Version 2.0 (the "License");
--- you may not use this file except in compliance with the License.
--- You may obtain a copy of the License at
---
---      http://www.apache.org/licenses/LICENSE-2.0
---
--- Unless required by applicable law or agreed to in writing, software
--- distributed under the License is distributed on an "AS IS" BASIS,
--- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
--- See the License for the specific language governing permissions and
--- limitations under the License.
-
--- /* Author: Darby Lim */
-
 include "map_builder.lua"
 include "trajectory_builder.lua"
 
@@ -21,20 +5,20 @@ options = {
   map_builder = MAP_BUILDER,
   trajectory_builder = TRAJECTORY_BUILDER,
   map_frame = "map",
-  tracking_frame = "camera_pose_frame",
-  published_frame = "odom_frame",
-  odom_frame = "odom_frame",
+  tracking_frame = "base_link",
+  published_frame = "odom",
+  odom_frame = "odom",
   provide_odom_frame = false,
   publish_frame_projected_to_2d = false,
-  use_odometry = true,
+  use_odometry = false,
   use_nav_sat = false,
   use_landmarks = false,
   num_laser_scans = 1,
   num_multi_echo_laser_scans = 0,
   num_subdivisions_per_laser_scan = 1,
   num_point_clouds = 0,
-  lookup_transform_timeout_sec = 0.5,
-  submap_publish_period_sec = 0.3,
+  lookup_transform_timeout_sec = 0.2,
+  submap_publish_period_sec = 0.05,
   pose_publish_period_sec = 5e-3,
   trajectory_publish_period_sec = 30e-3,
   rangefinder_sampling_ratio = 1.,
@@ -44,57 +28,16 @@ options = {
   landmarks_sampling_ratio = 1.,
 }
 
---tunning guide
---https://google-cartographer-ros.readthedocs.io/en/latest/tuning.html
-
--- Cartographer configuration options:
--- https://google-cartographer.readthedocs.io/en/latest/configuration.html
-
 MAP_BUILDER.use_trajectory_builder_2d = true
 
---Local Slam
---there are more parameters to tune, but this ones are the ones I found more impactful
-
---this one tries to match two laser scans together to estimate the position,
---I think if not on it will rely more on wheel odometry
-TRAJECTORY_BUILDER_2D.use_online_correlative_scan_matching = true
-
--- tune this value to the amount of samples (i think revolutions) to average over
---before estimating te position of the walls and features in the environment
+TRAJECTORY_BUILDER_2D.min_range = 0.
+TRAJECTORY_BUILDER_2D.max_range = 3.
+TRAJECTORY_BUILDER_2D.missing_data_ray_length = 5.
+TRAJECTORY_BUILDER_2D.use_imu_data = false
+TRAJECTORY_BUILDER_2D.use_online_correlative_scan_matching = false
 TRAJECTORY_BUILDER_2D.num_accumulated_range_data = 1
 
---use or not use IMU, if used, the tracking_frame should be set to the one that the IMU is on
-TRAJECTORY_BUILDER_2D.use_imu_data = true
-
---bandpass filter for lidar distance measurements
-TRAJECTORY_BUILDER_2D.min_range = 0.3
-TRAJECTORY_BUILDER_2D.max_range = 8.
-TRAJECTORY_BUILDER_2D.max_z = .1
-TRAJECTORY_BUILDER_2D.min_z = -.1
-
---This is the scan matcher and the weights to different assumptions
---occupied_space gives more weight to the 'previous' features detected.
-TRAJECTORY_BUILDER_2D.ceres_scan_matcher.occupied_space_weight = 10.
-TRAJECTORY_BUILDER_2D.ceres_scan_matcher.translation_weight = 10.
-TRAJECTORY_BUILDER_2D.ceres_scan_matcher.rotation_weight = 40.
-
---this will help continue making the map while the robot is static
---default time is 5 seconds
-TRAJECTORY_BUILDER_2D.motion_filter.max_time_seconds = 0.1
-
---imu configuration parameters
-TRAJECTORY_BUILDER_2D.imu_gravity_time_constant = 10.
-
---map output parameters
-
---Global Slam
---Setting POSE_GRAPH.optimize_every_n_nodes to 0 is a handy way
---to disable global SLAM and concentrate on the behavior of local SLAM.
---This is usually one of the first thing to do to tune Cartographer.
-POSE_GRAPH.optimize_every_n_nodes = 90. --90 default
-POSE_GRAPH.optimization_problem.odometry_rotation_weight = 10
-POSE_GRAPH.optimization_problem.odometry_translation_weight = 1.
-POSE_GRAPH.optimization_problem.fixed_frame_pose_translation_weight = 1e-1
-POSE_GRAPH.optimization_problem.fixed_frame_pose_rotation_weight = 1e-1
+POSE_GRAPH.constraint_builder.min_score = 0.55
+POSE_GRAPH.constraint_builder.global_localization_min_score = 0.7
 
 return options
