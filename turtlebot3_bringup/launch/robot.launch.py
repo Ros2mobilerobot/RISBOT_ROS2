@@ -71,7 +71,6 @@ def generate_launch_description():
 
         Node(
             package='turtlebot3_node',
-            executable='turtlebot3_ros',
-            parameters=[tb3_param_dir],
+            executable='turtlebot3_node.py',
             output='screen'),
     ])

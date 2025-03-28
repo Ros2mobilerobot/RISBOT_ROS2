@@ -2,30 +2,21 @@
 <?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
 <package format="3">
   <name>turtlebot3_node</name>
-  <version>2.1.5</version>
-  <description>
-    TurtleBot3 driver node that include diff drive controller, odometry and tf node
-  </description> 
-  <maintainer email="willson@robotis.com">Will Son</maintainer>
-  <license>Apache 2.0</license>
-  <url type="website">http://turtlebot3.robotis.com</url>
-  <url type="repository">https://github.com/ROBOTIS-GIT/turtlebot3</url>
-  <url type="bugtracker">https://github.com/ROBOTIS-GIT/turtlebot3/issues</url>
-  <author email="thlim@robotis.com">Darby Lim</author>
-  <author email="pyo@robotis.com">Pyo</author>
+  <version>0.0.0</version>
+  <description>Node điều khiển TurtleBot3 sử dụng ROS 2</description>
+  <maintainer email="thangtranhoang2003@gmail.com">tht</maintainer>
+  <license>Apache-2.0</license>
+
   <buildtool_depend>ament_cmake</buildtool_depend>
-  <depend>dynamixel_sdk</depend>
-  <depend>geometry_msgs</depend>
-  <depend>message_filters</depend>
-  <depend>nav_msgs</depend>
-  <depend>rclcpp</depend>
-  <depend>rcutils</depend>
-  <depend>sensor_msgs</depend>
-  <depend>std_msgs</depend>
-  <depend>std_srvs</depend>
-  <depend>tf2</depend>
-  <depend>tf2_ros</depend>
-  <depend>turtlebot3_msgs</depend>
+  <buildtool_depend>ament_cmake_python</buildtool_depend>
+
+  <exec_depend>rclpy</exec_depend>
+  <exec_depend>geometry_msgs</exec_depend>
+  <exec_depend>python3-serial</exec_depend>
+
+  <test_depend>ament_lint_auto</test_depend>
+  <test_depend>ament_lint_common</test_depend>
+
   <export>
     <build_type>ament_cmake</build_type>
   </export>
