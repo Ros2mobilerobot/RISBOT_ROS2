@@ -60,6 +60,8 @@ configurable_parameters = [{'name': 'camera_name',                  'default': '
                            {'name': 'depth_module.gain.2',         'default': '16', 'description': 'Initial value for hdr_merge filter'},
                            {'name': 'wait_for_device_timeout',      'default': '-1.', 'description': 'Timeout for waiting for device to connect (Seconds)'},
                            {'name': 'reconnect_timeout',            'default': '6.', 'description': 'Timeout(seconds) between consequtive reconnection attempts'},
+                           {'name': 'publish_tf',                   'default': 'false', 'description': ''},
+                           {'name': 'publish_odom_tf',              'default': 'false', 'description': ''},
                           ]
 
 def declare_configurable_parameters(parameters):

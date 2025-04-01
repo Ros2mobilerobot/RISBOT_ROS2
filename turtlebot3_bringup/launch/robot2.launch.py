@@ -25,14 +25,28 @@ def generate_launch_description():
         'hokuyo_launch_file',
         default=os.path.join(get_package_share_directory('urg_node2'), 'launch', 'urg_node2.launch.py'))
     
-    t265_launch = IncludeLaunchDescription(
+    ekf_launch = IncludeLaunchDescription(
         PythonLaunchDescriptionSource([
-            os.path.join(get_package_share_directory('realsense2_camera'), 'launch', 'rs_launch.py')
+            os.path.join(get_package_share_directory('robot_localization'), 'launch', 'ekf.launch.py')
+        ]),
+    )
+   
+    t265_multi_launch = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource([
+            os.path.join(get_package_share_directory('realsense2_camera'), 'launch', 'rs_multi_camera_launch.py') 
         ]),
         launch_arguments={'enable_pose_jumping': 'false'}.items(),
     )
 
     use_sim_time = LaunchConfiguration('use_sim_time', default='false')
+
+    # Transform giữa T265 và robot
+    # t265_tf = Node(
+    #     package="tf2_ros",
+    #     executable="static_transform_publisher",
+    #     arguments=["0.45", "0", "0.9", "0", "0", "0", "base_footprint", "odom_frame"]
+    # )
+
 
     return LaunchDescription([
         DeclareLaunchArgument(
@@ -55,8 +69,8 @@ def generate_launch_description():
             PythonLaunchDescriptionSource([hokuyo_launch_file]),
         ),
 
-        t265_launch,
-
+        t265_multi_launch,
+        ekf_launch,
         # t265_tf,
 
         Node(
